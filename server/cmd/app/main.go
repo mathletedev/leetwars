@@ -1,20 +1,34 @@
 package main
 
 import (
+	"flag"
 	"log"
-	"net/http"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/mathletedev/leetwars/internal/auth"
+	"github.com/mathletedev/leetwars/internal/db"
+	"github.com/mathletedev/leetwars/internal/server"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, World!"))
-	})
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("error loading .env file")
+	}
+
+	prod := flag.Bool("dev", false, "run in development mode")
+
+	flag.Parse()
+
+	*prod = !*prod
+
+	auth.NewAuth(prod)
+
+	s := server.NewServer(prod)
+	d := db.NewDatabase()
+	defer d.Close()
 
 	log.Println("Server started! 🚀")
-	http.ListenAndServe(":8080", r)
+	log.Fatal(s.ListenAndServe())
 }

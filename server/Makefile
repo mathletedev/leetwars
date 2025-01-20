@@ -6,3 +6,6 @@ build app:
 
 clean:
 	go clean -modcache
+
+db:
+	psql leetwars < ./leetwars.sql
