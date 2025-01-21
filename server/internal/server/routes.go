@@ -36,13 +36,26 @@ func (s *Server) HandleHello(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) HandleMe(w http.ResponseWriter, r *http.Request) {
-	user, err := gothic.GetFromSession("user", r)
+	id, err := gothic.GetFromSession("user", r)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	w.Write([]byte(user))
+	user, err := s.db.ReadUser(id)
+	if err != nil {
+		if err.Error() == "no username" {
+			// https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418
+			w.WriteHeader(http.StatusTeapot)
+			return
+		}
+
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }
 
 func (s *Server) HandleAuth(w http.ResponseWriter, r *http.Request) {
@@ -63,15 +76,30 @@ func (s *Server) HandleAuthCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	encodedUser, _ := json.Marshal(user)
-	gothic.StoreInSession("user", string(encodedUser), r, w)
-
-	// create user if one doesn't exist
-	rows, _ := s.db.Query(context.Background(), "SELECT FROM users WHERE email=$1;", user.Email)
-	defer rows.Close()
-	if !rows.Next() {
-		s.db.CreateUser(user.Email)
+	rows, err := s.db.Query(context.Background(), "SELECT id FROM users WHERE email=$1;", user.Email)
+	if err != nil {
+		log.Println(err)
+		fmt.Fprintln(w, r)
+		return
 	}
+
+	defer rows.Close()
+
+	var id string
+	if rows.Next() {
+		rows.Scan(&id)
+	} else {
+		// create user if one doesn't exist
+		id, err = s.db.CreateUser(user.Email)
+		if err != nil {
+			log.Println(err)
+			fmt.Fprintln(w, r)
+			return
+		}
+	}
+
+	// set user id in session
+	gothic.StoreInSession("user", id, r, w)
 
 	http.Redirect(w, r, config.WebUrl, http.StatusFound)
 }

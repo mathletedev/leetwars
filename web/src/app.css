@@ -4,18 +4,18 @@
 
 @layer base {
     body {
-        @apply h-screen dark:bg-black dark:text-violet-50;
+        @apply bg-base text-text h-screen;
     }
 
     input {
-        @apply rounded px-4 py-2 dark:bg-neutral-900;
+        @apply bg-surface0 rounded px-4 py-2;
     }
 
     button {
-        @apply rounded px-2 py-1 transition-colors;
+        @apply bg-lavender hover:bg-mauve rounded px-2 py-1 text-base transition-colors;
     }
 
     a {
-        @apply hover:underline dark:text-indigo-300;
+        @apply text-blue hover:underline;
     }
 }

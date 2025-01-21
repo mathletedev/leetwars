@@ -13,6 +13,7 @@
         "format": "prettier --write ."
     },
     "dependencies": {
+        "@catppuccin/tailwindcss": "^0.1.6",
         "@svelte-put/clickoutside": "^4.0.0",
         "svelte-hero-icons": "^5.2.0"
     },

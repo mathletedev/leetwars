@@ -5,6 +5,7 @@ go 1.23.3
 require (
 	cloud.google.com/go/compute v1.20.1 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	github.com/Jeffail/gabs v1.4.0 // indirect
 	github.com/go-chi/chi/v5 v5.2.0 // indirect
 	github.com/go-chi/cors v1.2.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect

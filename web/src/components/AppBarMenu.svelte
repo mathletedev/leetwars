@@ -28,12 +28,12 @@
 <svelte:window bind:innerWidth={screenWidth} />
 
 <div
-    class="absolute top-20 flex w-64 -translate-x-1/2 flex-col gap-2 rounded-lg border-2 p-2 dark:border-violet-900 dark:bg-neutral-900"
+    class="border-lavender absolute top-20 flex w-64 -translate-x-1/2 flex-col gap-2 rounded-lg border-2 p-2"
     style:left={`${left}px`}
     bind:this={element}
     bind:offsetWidth={elementWidth}
     use:clickoutside
-    on:clickoutside={clickOutside}
+    onclickoutside={clickOutside}
 >
     <slot />
 </div>

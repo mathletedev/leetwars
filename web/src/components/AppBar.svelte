@@ -23,19 +23,16 @@
     };
 </script>
 
-<nav
-    class="flex h-16 items-center border-b-2 pr-8 dark:border-violet-900 dark:bg-neutral-900"
->
-    <a class="w-80 text-center text-2xl dark:text-violet-400" href="/">Retina</a
-    >
+<nav class="border-lavender flex h-16 items-center border-b-2 pr-8">
+    <a class="text-lavender w-80 text-center text-2xl" href="/">LeetWars</a>
     <div class="relative ml-8 w-96">
         <input
-            class="w-full bg-neutral-800 pl-10"
+            class="bg-surface0 w-full pl-10"
             placeholder="Search"
             bind:value={search}
         />
         <Icon
-            class="absolute left-0 top-0 ml-2 w-6 dark:text-neutral-500"
+            class="text-overlay2 absolute left-0 top-0 ml-2 w-6"
             src={MagnifyingGlass}
         />
     </div>
@@ -64,7 +61,7 @@
         {/if}
     {:else}
         <button
-            class="h-10 rounded-full px-4 hover:shadow dark:bg-violet-700"
+            class="bg-blue h-10 rounded-full px-4 text-base hover:shadow"
             on:click={signIn}
         >
             Sign in

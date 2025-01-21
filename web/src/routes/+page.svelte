@@ -14,9 +14,13 @@
             return;
         }
 
-        const data = await res.json();
+        const data = await res.text();
+        console.log(data);
 
-        content = `Hello, ${data.RawData.email}!`;
+        // const data = await res.json();
+        // console.log(data);
+
+        // content = `Hello, ${data.username}!`;
     });
 </script>
 
