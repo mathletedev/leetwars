@@ -8,13 +8,13 @@ export const load: LayoutLoad = async ({ url }) => {
         credentials: "include",
     });
 
-    if (res.status === 401) {
+    if (res.status === 401 || url.pathname === "/init") {
         return {
             user: null,
         };
     }
 
-    if (res.status === 418 && url.pathname !== "/init") {
+    if (res.status === 418) {
         redirect(302, "/init");
     }
 

@@ -47,7 +47,8 @@
                 class="rounded-full"
                 width="100%"
                 height="100%"
-                src="https://assets.leetcode.com/users/mathletedev/avatar_1714888331.png"
+                src={user.avatar ||
+                    "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"}
                 alt="profile_picture"
             />
         </button>

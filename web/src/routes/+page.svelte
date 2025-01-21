@@ -14,13 +14,9 @@
             return;
         }
 
-        const data = await res.text();
-        console.log(data);
+        const data = await res.json();
 
-        // const data = await res.json();
-        // console.log(data);
-
-        // content = `Hello, ${data.username}!`;
+        content = `Hello, ${data.username}!`;
     });
 </script>
 

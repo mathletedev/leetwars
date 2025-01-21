@@ -1,12 +1,15 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
+	"github.com/Jeffail/gabs"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -24,9 +27,12 @@ func (s *Server) RegisterRoutes(allowedOrigins []string) http.Handler {
 
 	r.Get("/api/hello", s.HandleHello)
 	r.Get("/api/me", s.HandleMe)
+
 	r.Get("/auth/{provider}", s.HandleAuth)
 	r.Get("/auth/{provider}/callback", s.HandleAuthCallback)
 	r.Get("/signout/{provider}", s.HandleSignout)
+
+	r.Post("/api/username", s.HandleUsername)
 
 	return r
 }
@@ -108,4 +114,48 @@ func (s *Server) HandleSignout(w http.ResponseWriter, r *http.Request) {
 	gothic.Logout(w, r)
 	w.Header().Set("Location", config.WebUrl)
 	w.WriteHeader(http.StatusTemporaryRedirect)
+}
+
+func (s *Server) HandleUsername(w http.ResponseWriter, r *http.Request) {
+	id, err := gothic.GetFromSession("user", r)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	reqData, err := io.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintln(w, r)
+		return
+	}
+
+	username := string(reqData)
+
+	jsonData := map[string]string{
+		"query": `
+            { 
+				matchedUser(username: "` + username + `") {
+					profile {
+						userAvatar
+					}
+				}
+            }
+        `,
+	}
+	jsonValue, _ := json.Marshal(jsonData)
+	resp, err := http.Post("https://leetcode.com/graphql", "application/json", bytes.NewBuffer(jsonValue))
+	if err != nil {
+		fmt.Fprintln(w, r)
+		return
+	}
+
+	respData, _ := io.ReadAll(resp.Body)
+	respParsed, _ := gabs.ParseJSON(respData)
+	avatar, ok := respParsed.Path("data.matchedUser.profile.userAvatar").Data().(string)
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	s.db.UpdateUserByLeetCode(id, username, avatar)
 }
